@@ -25,5 +25,21 @@ export N_CHECKS="stig_checks/$TYPE/$STG_VERSION/$TYPE_$TODAY_DT"
 export N_RESULTS="results/$TYPE/$STG_VERSION/$TYPE_$TODAY_DT/" && mkdir -p $N_RESULTS
 
 
+if [ -z $1 ]
+then
+echo ""
+printf '%s\n'
+echo -e "..........................................|> ${GREEN}No STIG CKL file found please try again${NC}"
+printf '%s\n'
+exit 0
+else
+
+
+echo ""
+printf '%s\n'
+echo -e "..........................................|> ${GREEN}STIG CKL XML File Found${NC}"
+
+
+
 
 
