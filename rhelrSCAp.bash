@@ -3,6 +3,16 @@
 
 
 
+# set the text colors variables
+export GREEN='\033[0;32m'
+export G='\033[0;32m'
+export NC='\033[0m'
+# some date Variables
+export today=$(date +%h-%d)
+export todayAll=$(date +%Y-%m-%d)
+export logFile='logs/RHEL-rSCAP-$todayAll.log'
+export logTime=`date "+%Y-%m-%d %H:%M:%S"`
+
 
 
 # Results Variables
