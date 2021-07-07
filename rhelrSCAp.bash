@@ -33,6 +33,45 @@ echo -e "..........................................|> ${GREEN}No STIG CKL file f
 printf '%s\n'
 exit 0
 else
+cat $1 > `hostname -f`.xml
+echo -e "..........................................|> ${GREEN}STIG CKL XML File created${NC}"
+
+fi
+
+
+# XML FILE DATA VARIABLES - TARGET DATA INFO
+HOSTNAME=$(hostname)
+HOSTFQDN=$(hostname -f)
+HOST_IP=$(hostname -i|cut -f2 -d ' ')
+HOST_MAC=$(ip addr | grep link/ether | awk '{print $2}')
+
+# Updating STIG File  Target Data Info.
+xmlTargetFileName=`hostname -f`.xml
+export xmlTargetFileName
+
+echo " "
+echo "..........................................|> Editing Target Data Section"
+xmlstarlet edit --inplace --update "//CHECKLIST/ASSET/HOST_NAME" --value "$HOSTNAME" $xmlTargetFileName
+xmlstarlet edit --inplace --update "//CHECKLIST/ASSET/HOST_FQDN" --value "$HOSTFQDN" $xmlTargetFileName
+xmlstarlet edit --inplace --update "//CHECKLIST/ASSET/HOST_IP" --value "$HOST_IP" $xmlTargetFileName
+xmlstarlet edit --inplace --update "//CHECKLIST/ASSET/HOST_MAC" --value "$HOST_MAC" $xmlTargetFileName
+echo -e "..........................................|> ${GREEN}Editing Target Data Section completed!${NC}"
+echo -e "${GREEN}...................................................................................${NC}"
+
+VULN_TOTAL=`xmlstarlet sel -t -c "count(//VULN)" $xmlTargetFileName`
+echo -e  "Total Number of Vulnerability checks......|> ${GREEN}$(( $VULN_TOTAL + 1 ))${NC}"
+
+VULN_COUNT=0
+
+# ITERATION THROUGH VULN-ID
+
+while [ $VULN_COUNT -lt $VULN_TOTAL ]
+do
+
+        VULN_COUNT=$(( $VULN_COUNT + 1 ))
+        VulnId=$(xmlstarlet sel  -T -t -v  "//VULN[$VULN_COUNT]/STIG_DATA[1]/ATTRIBUTE_DATA[1]" $xmlTargetFileName)
+        #;printf '%s\n' "$VulnId"
+
 
 
 echo ""
