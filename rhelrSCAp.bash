@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-
+set -e
 
 # set the text colors variables
 export GREEN='\033[0;32m'
