@@ -146,7 +146,7 @@ do
         do
                 # Executing the Scripts
                 which $vuln
-                bash $vuln
+                $vuln
                 export vuln
 
         done
