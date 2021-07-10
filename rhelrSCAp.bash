@@ -1,67 +1,133 @@
 #!/bin/bash
+#
+#title                       :rhelrSCAP
+#description                 :This script will perform scap checks using stigs check xml file
+#                            :then write the result to ckl file.
+#author                      :Tamir Suliman
+#date                        :2021-07-10
+#version                     :1.5
+#usage                       :bash rhelrSCAP.bash stig_check_file.xml
+#notes                       :Install xmlstarlet and libxml2
+#bash_version                :tested successfully on version 4.2.46(2)-release
 
+
+                                             ### /**** SCRIPT STARTS HERE ****
+#Cause the script to exit if some command fails
 
 set -e
 
-# set the text colors variables
+# Set the text colors variables
+
 export GREEN='\033[0;32m'
 export G='\033[0;32m'
 export NC='\033[0m'
-# some date Variables
+export RED='\033[0;31m'
+
+
+# Set time & date variables
+
 export today=$(date +%h-%d)
 export todayAll=$(date +%Y-%m-%d)
 export logFile='logs/RHEL-rSCAP-$todayAll.log'
 export logTime=`date "+%Y-%m-%d %H:%M:%S"`
 
+# XMLSTARLET TOOL INSTALLATION
 
-
-# Results Variables
-
-export TYPE=`echo $1 | grep "-"|cut -d"-" -f1`
-export STG_VERSION=`echo $1 |grep V | cut -d "_" -f2`
-export TODAY_DT=`date +%Y-%m-%d`
-export func_scripts="functions/"
-export N_CHECKS="stig_checks/$TYPE/$STG_VERSION/$TYPE_$TODAY_DT"
-export N_RESULTS="results/$TYPE/$STG_VERSION/$TYPE_$TODAY_DT/" && mkdir -p $N_RESULTS
-
-
-if [ -z $1 ]
-then
-echo ""
-printf '%s\n'
-echo -e "..........................................|> ${GREEN}No STIG CKL file found please try again${NC}"
-printf '%s\n'
-exit 0
+status="$(rpm -qa | grep xmlstarlet | head -c1 | wc -c)"
+if [[ $status -eq 0 ]]; then
+        echo -e "....|> ${RED}[XMLSTARLET TOOL NOT AVAILABLE.!]${NC}"
+        yum install wget -y
+        wget --no-check-certificate https://dl.fedoraproject.org/pub/epel/7Server/x86_64/Packages/x/xmlstarlet-1.6.1-1.el7.x86_64.rpm
+        sudo yum localinstall xmlstarlet -y
 else
-cat $1 > `hostname -f`.xml
-echo -e "..........................................|> ${GREEN}STIG CKL XML File created${NC}"
-
+        echo -e "....|> ${GREEN}[XMLSTARLET TOOL AVAILABLE.!]${NC}"
+        
 fi
 
 
+
+# SCRIPT VARIABLES
+echo -e "....|> ${GREEN}.....................${NC}"
+echo -e "....|> ${GREEN} SCAP FILE INFORMATION ${NC}"
+
+export TYPE=`echo $1 | grep "-"|cut -d "-" -f1`
+echo $TYPE
+export STG_VERSION=`echo $1 | grep V | cut -d "_" -f2`
+echo $STG_VERSION
+export TODAY_DT=`date +%Y-%m-%d`
+echo $TODAY_DT
+export func_scripts="functs"
+
+
+#export N_CHECKS="stig_checks/$TYPE/$STG_VERSION/$TYPE_$TODAY_DT"
+# Had to hard coded because this generated on that day
+
+export N_CHECKS="stig_checks/RHEL/V2R6/2020-01-26"
+
+echo $N_CHECKS
+export N_RESULTS="results/$TYPE/$STG_VERSION/$TYPE_$TODAY_DT" && mkdir -p $N_RESULTS
+echo -e "....|> ${GREEN}[RESULTS FOLDER CREATED.!]${NC}"
+
+# Path Information
+
+echo $PWD
+
+#PATH=/sbin:/bin:/usr/sbin:/usr/bin:$HOME:$func_scripts:~$N_CHECKS:$logFile:$N_RESULTS
+export PATH=/sbin:/bin:/usr/sbin:/usr/bin:$PWD/$N_CHECKS:$PWD/results:$PWD/functs:$PWD/logs:$PATH
+
+# XML FILE CHECK
+
+if [ -z $1 ];then
+        echo ""
+        printf '%s\n'
+        echo -e "....|> ${RED}[No STIG CKL file found please try again.]${NC}"
+                                                                                  
+          echo -e "....|> ${RED}[usage: ./rhelrSCAP stig_check_file.xml ]${NC}"
+        echo -e "....|> ${RED}[Did you run the script with correct file format or the right permission.]{NC}"
+        printf '%s\n'
+        exit 0
+else
+        printf '%s\n'
+        echo -e "....|> ${GREEN}[STIG CKL XML File Found.]${NC}"
+        cat $1 > `hostname -f`.xml
+        echo -e "....|> ${GREEN}[STIG CKL XML File Created.]${NC}"
+fi
+
+
+
+
 # XML FILE DATA VARIABLES - TARGET DATA INFO
+
 HOSTNAME=$(hostname)
 HOSTFQDN=$(hostname -f)
 HOST_IP=$(hostname -i|cut -f2 -d ' ')
 HOST_MAC=$(ip addr | grep link/ether | awk '{print $2}')
 
-# Updating STIG File  Target Data Info.
+# Updating STIG File Target Data Info.
+
 xmlTargetFileName=`hostname -f`.xml
 export xmlTargetFileName
 
 echo " "
-echo "..........................................|> Editing Target Data Section"
+echo "....|> Editing Target Data Section"
+echo "....|> Adding Hostname , HostFQDN, Host IP, &  Host MAC Address"
+sleep 2
 xmlstarlet edit --inplace --update "//CHECKLIST/ASSET/HOST_NAME" --value "$HOSTNAME" $xmlTargetFileName
 xmlstarlet edit --inplace --update "//CHECKLIST/ASSET/HOST_FQDN" --value "$HOSTFQDN" $xmlTargetFileName
 xmlstarlet edit --inplace --update "//CHECKLIST/ASSET/HOST_IP" --value "$HOST_IP" $xmlTargetFileName
 xmlstarlet edit --inplace --update "//CHECKLIST/ASSET/HOST_MAC" --value "$HOST_MAC" $xmlTargetFileName
-echo -e "..........................................|> ${GREEN}Editing Target Data Section completed!${NC}"
-echo -e "${GREEN}...................................................................................${NC}"
-
+sleep 2
+echo -e "....|> ${GREEN}Editing Target Data Section completed!${NC}"
+echo -e "${GREEN}...................................................................${NC}"
+echo "....|> Calculating the total Number of Vulnerability Checks"
+                                                                    
+sleep 2
 VULN_TOTAL=`xmlstarlet sel -t -c "count(//VULN)" $xmlTargetFileName`
+sleep 2
 echo -e  "Total Number of Vulnerability checks......|> ${GREEN}$(( $VULN_TOTAL + 1 ))${NC}"
 
 VULN_COUNT=0
+echo -e "${GREEN}...................................................................${NC}"
 
 # ITERATION THROUGH VULN-ID
 
@@ -70,15 +136,38 @@ do
 
         VULN_COUNT=$(( $VULN_COUNT + 1 ))
         VulnId=$(xmlstarlet sel  -T -t -v  "//VULN[$VULN_COUNT]/STIG_DATA[1]/ATTRIBUTE_DATA[1]" $xmlTargetFileName)
-        #;printf '%s\n' "$VulnId"
+        VulnStatus=$(xmlstarlet sel  -T -t -v  "//VULN[$VULN_COUNT]/STATUS[1]" $xmlTargetFileName)
+        vvid=$(xmlstarlet sel  -T -t -v  "//VULN[$VULN_COUNT]/STIG_DATA[1]/ATTRIBUTE_DATA[1]" $xmlTargetFileName)
+        export VULN_COUNT
 
 
+
+        for vuln in $vvid
+        do
+                # Executing the Scripts
+                which $vuln
+                bash $vuln
+                export vuln
+
+        done
+done
+
+# Results
 
 echo ""
 printf '%s\n'
-echo -e "..........................................|> ${GREEN}STIG CKL XML File Found${NC}"
+printf '%s\n'
+echo " rSCAP -> RHEL 7.x <- completed processing all checks -> "
+sleep 3
+echo -e "${GREEN}...................................................................${NC}"
+echo " STIG CKL File saved at $PWD/$xmlTargetFileName "
+printf '%s\n'
+printf '%s\n'
+                                                                   
+printf '%s\n'
+echo ""
 
+# Used with set -e
 
-
-
+exit 0
 
