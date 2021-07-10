@@ -3,7 +3,7 @@
 
 ## rSCAP-Linux
 
-rSCAP for Linux is a security automation and auditing for Linux systems using bash scripts adopting similar approach as openSCAP from available  internet open sources such NIST etc.The tool can perform scap checks against different security guidelines.
+rSCAP for Linux is a security automation and auditing for Linux systems using bash scripts adopting similar approach as openSCAP from available  internet  open source security standards such NIST etc.The tool can perform scap / scan checks against different security guidelines STIGs.
 
 To use the tool install the following packages
 
