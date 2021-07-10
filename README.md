@@ -18,7 +18,8 @@ yum install xmlstarlet -y
 Ubuntu 
 
 ```
-apt-get install xmlstarlet
+apt-get install xmlstarlet -y
+
 ```
 
 
