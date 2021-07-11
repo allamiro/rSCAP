@@ -21,6 +21,7 @@ Ubuntu
 apt-get install xmlstarlet -y
 
 ```
+## How to use the tool
 
 
 
