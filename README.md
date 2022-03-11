@@ -7,7 +7,7 @@ rSCAP for Linux is a security automation and auditing for Linux systems using ba
 
 To use the tool install the following packages
 
-RHEL , CentOS , and Fedora 
+RHEL 7 , CentOS 7 , and Fedora 
 
 ```
 wget --no-check-certificate https://dl.fedoraproject.org/pub/epel/7Server/x86_64/Packages/x/xmlstarlet-1.6.1-1.el7.x86_64.rpm
