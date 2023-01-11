@@ -24,7 +24,14 @@ apt-get install xmlstarlet -y
 ## How to use the tool
 
 
+MAC OS
 
+
+
+```
+brew install xmlstarlet 
+
+```
 ## References
 
 
