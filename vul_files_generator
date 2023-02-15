@@ -1,39 +1,41 @@
 #!/bin/bash
 
-#usage                         : ./vul_file_gen file.xml
+# Usage: vul_file_gen.sh file.xml
 
-if [ ! -e $1 ]
-then
-echo "........................................No  CKL file found please check the permission or the xml file or try again"
+if [ ! -e "$1" ]; then
+  echo "No CKL file found. Please check the permissions or the XML file and try again."
 else
-echo "........................................ CKL XML File Found"
-sleep 3
-echo "........................................Processing the file"
+  echo "CKL XML File Found"
+  sleep 3
+  echo "Processing the file"
 
-export TYPE=`echo $1 | grep "-"  | cut -d "-" -f1`
-export STG_VERSION=`echo $1 | grep V | cut -d "_" -f2`
-export TODAY_DT=`date +%Y-%m-%d`
+  # Extract variables from the input file name
+  TYPE=$(echo "$1" | grep "-" | cut -d "-" -f1)
+  STG_VERSION=$(echo "$1" | grep V | cut -d "_" -f2)
+  TODAY_DT=$(date +%Y-%m-%d)
 
-export N_CHECKS="/home/user/rSCAP/checks/$TYPE/$STG_VERSION/$TYPE_$TODAY_DT/"
-echo $N_CHECKS
-mkdir -p $N_CHECKS
-
+  # Create directory for the new checks
+  N_CHECKS="/home/user/rSCAP/checks/${TYPE}/${STG_VERSION}/${TYPE}_${TODAY_DT}/"
+  echo "$N_CHECKS"
+  mkdir -p "$N_CHECKS"
 fi
-export xmlTargetFileName="$1"
-echo $xmlTargetFileName
-VULN_TOTAL=`xmlstarlet sel -t -c "count(//VULN)" $xmlTargetFileName`
-echo $VULN_TOTAL
+
+# Process the XML file
+xmlTargetFileName="$1"
+echo "$xmlTargetFileName"
+VULN_TOTAL=$(xmlstarlet sel -t -c "count(//VULN)" "$xmlTargetFileName")
+echo "$VULN_TOTAL"
 VULN_COUNT=0
-echo $VULN_COUNT
-while [ $VULN_COUNT -lt $VULN_TOTAL ]
-do
+echo "$VULN_COUNT"
 
-VULN_COUNT=$(( $VULN_COUNT + 1 ))
-VulnId=$(xmlstarlet sel  -T -t -v  "//VULN[$VULN_COUNT]/STIG_DATA[1]/ATTRIBUTE_DATA[1]" $xmlTargetFileName);printf '%s\n' "$VulnId"
-touch $N_CHECKS/$VulnId
-
-
-
-chmod 0700 $N_CHECKS/$VulnId
-
+while [ "$VULN_COUNT" -lt "$VULN_TOTAL" ]; do
+  VULN_COUNT=$((VULN_COUNT + 1))
+  VulnId=$(xmlstarlet sel -T -t -v "//VULN[$VULN_COUNT]/STIG_DATA[1]/ATTRIBUTE_DATA[1]" "$xmlTargetFileName")
+  printf '%s\n' "$VulnId"
+  
+  # Create file for each vulnerability
+  touch "${N_CHECKS}/${VulnId}"
+  chmod 0700 "${N_CHECKS}/${VulnId}"
 done
+
+
