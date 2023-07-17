@@ -19,6 +19,13 @@ yum install xmlstarlet -y
 
 ```
 
+ RHEL 8 
+
+ ```
+wget --no-check-certificate https://dl.fedoraproject.org/pub/epel/8Server/x86_64/Packages/x/xmlstarlet-1.6.1-1.el7.x86_64.rpm
+dnf install xmlstarlet -y
+ ```
+
 Ubuntu 
 
 ```
@@ -27,9 +34,7 @@ apt-get install xmlstarlet -y
 ```
 ## How to use the tool
 
-
 MAC OS
-
 
 
 ```
