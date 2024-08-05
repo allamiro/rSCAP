@@ -1,0 +1,41 @@
+#!/bin/bash
+#
+# VulID: V-71849
+
+# Quality Check :
+# Reviewed : Tamir Suliman : 07/18/2021
+# Notes:
+# 1.  Missing checks - Open. 07/18/2021
+#
+#
+
+
+printf '%s\n'
+printf '%s\n'
+echo -e "working on |...................................|>  V-71849"
+
+
+# Check the default fle permissions , ownerships, and group memebership of system files and commands.
+
+V71849="for i in `rpm -Va | egrep -i '^\.[M|U|G|.]{8}' | cut -d " " -f4,5`;do for j in `rpm -qf $i`;do rpm -ql $j --dump | cut -d " " -f1,5,6,7 |grep $i;done;done"
+FINDING_DETAILS=`echo -e $V71849`
+
+
+xmlstarlet edit --inplace --update "//VULN[$VULN_COUNT]/STATUS[1]" --value "Open" $xmlTargetFileName
+xmlstarlet edit --inplace --update "//VULN[$VULN_COUNT]/FINDING_DETAILS[1]" --value "$FINDING_DETAILS" $xmlTargetFileName
+
+
+
+# Checks to be implemented :
+# If the file is more permissive than the default permissions, this is a finding.
+# If the file is not owned by the default owner and is not documented with the Information System Security Officer (ISSO), this is a finding.
+# If the file is not a member of the default group and is not documented with the Information System Security Officer (ISSO), this is a finding.
+
+
+
+
+
+echo -e "...............................................|>  V-71849 ${GREEN}[Please Review the File Permissions]${NC}"
+echo -e "...............................................|>  V-71849 ${GREEN}[Verify RCCSWA STIG CLEAN UP Script is Available]${NC}"
+echo -e "...............................................|>  V-71849 ${GREEN}[Clean up script is available at /etc/cron.daily]${NC}"
+echo -e "...............................................|>  $vuln${GREEN}${NC}"
