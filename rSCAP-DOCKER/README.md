@@ -1,21 +1,31 @@
 # rSCAP-Docker
 
 ## Overview
-**rSCAP-Docker** is a modular Bash-based security guidelines scanner for Linux Docker containers. It is designed to read Security Technical Implementation Guide (STIG) files and ensure compliance by scanning Docker containers against specified rules.
+**rSCAP-Docker** is a Bash-based modular tool designed to scan Docker containers for compliance with Security Technical Implementation Guide (STIG) rules. It parses STIG files in XML format, extracts compliance rules, and evaluates Docker containers against these guidelines to ensure security hardening.
 
 ## Features
-- Modular structure for easy maintenance and updates.
-- Parses STIG files in YAML or JSON format.
-- Scans Docker containers for compliance with security guidelines.
-- Generates detailed logs and compliance reports.
+- Parses STIG files in **XML format** (DoD standards).
+- Scans Docker containers for compliance with security rules.
+- Modular and extensible for additional compliance checks.
+- Generates detailed compliance reports and logs.
+- Easy configuration and setup.
 
 ## Prerequisites
-- **Linux OS** with Bash shell.
-- **Docker** installed and running.
-- Optional: `jq` for parsing JSON, `yq` for YAML.
+1. **Operating System**: Linux with Bash shell.
+2. **Docker**: Installed and configured.
+3. **Utilities**: `xmlstarlet`, `docker`, and standard GNU tools.
 
-## Installation
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-repo/rSCAP-Docker.git
-   cd rSCAP-Docker
+### Install Required Tools
+```
+sudo apt install xmlstarlet jq docker
+
+```
+1. Clone the repo
+```
+git clone https://github.com/your-repo/rSCAP-Docker.git
+cd rSCAP-Docker
+```
+2. Make scripts executable:
+```
+chmod +x rSCAP-Docker.sh modules/*.sh utils/*.sh
+```
