@@ -4,7 +4,7 @@
 **rSCAP-Docker** is a Bash-based modular tool designed to scan Docker containers for compliance with Security Technical Implementation Guide (STIG) rules. It parses STIG files in XML format, extracts compliance rules, and evaluates Docker containers against these guidelines to ensure security hardening.
 
 ## Features
-- Parses STIG files in **XML format** (DoD standards).
+- Parses STIG files in **XML format** 
 - Scans Docker containers for compliance with security rules.
 - Modular and extensible for additional compliance checks.
 - Generates detailed compliance reports and logs.
